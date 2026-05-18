@@ -19,7 +19,7 @@ function LandingPage() {
       </nav>
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-green-900/60 backdrop-blur-sm py-12 px-12 z-10">
-        <h1 className="text-8xl font-black text-white mb-3 transition-all duration-700 opacity-100 translate-y-0" >
+        <h1 className="font-special-gothic-expanded-one text-8xl text-white mb-3 transition-all duration-700 opacity-100 translate-y-0" >
           SmartFit
         </h1>
         <h2 className="text-2xl font-bold text-white mb-2 transition-all duration-700 delay-150 opacity-100 translate-y-0">
