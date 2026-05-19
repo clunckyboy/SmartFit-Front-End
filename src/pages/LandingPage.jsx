@@ -3,22 +3,24 @@ import { Link } from "react-router-dom";
 
 function LandingPage() {
   return (
-    <div 
+    <main 
       className="w-full h-screen fixed inset-0 bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/images/landing-page-background.png')" }}
     >
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0" aria-hidden="true" />
 
-      <nav className="absolute top-0 right-0 p-6 flex gap-3 z-10">
-        <Link to="/signup">
-          <LoginButtons name="Sign up" />
-        </Link>
-        <Link to="/login">
-          <LoginButtons name="Login" />
-        </Link>
-      </nav>
+      <header className="absolute top-0 right-0 p-6 z-10">
+        <nav className="flex gap-3" aria-label="Main Navigation">
+          <Link to="/signup">
+            <LoginButtons name="Sign up" />
+          </Link>
+          <Link to="/login">
+            <LoginButtons name="Login" />
+          </Link>
+        </nav>
+      </header>
 
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-white/60 backdrop-blur-sm py-12 px-12 z-10">
+      <section className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-white/60 backdrop-blur-sm py-12 px-12 z-10">
         <h1 className="font-special-gothic-expanded-one text-8xl text-black mb-3 transition-all duration-700 opacity-100 translate-y-0" >
           SmartFit
         </h1>
@@ -26,12 +28,11 @@ function LandingPage() {
           Meet SmartFit: Your Personal Digital Health Coach.
         </h2>
         <p className="text-base font-semibold text-black/75 transition-all duration-700 delay-300 opacity-100 translate-y-0">
-        Tailored nutrition and fitness plans powered by AI, designed to adapt as you grow.
+          Tailored nutrition and fitness plans powered by AI, designed to adapt as you grow.
         </p>
-      </div>
-    </div>
-  )
-}
-
+      </section>
+    </main>
+  );
+};
 
 export default LandingPage;
