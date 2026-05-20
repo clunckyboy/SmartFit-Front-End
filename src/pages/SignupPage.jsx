@@ -74,6 +74,7 @@ function SignupPage() {
               <select name="goal" id="signup-goal" defaultValue="" className="border border-black px-2 py-1 rounded-lg shadow-md">
                 <option value="" disabled>Select a goal</option>
                 <option value="lose weight">Lose Weight</option>
+                <option value="mantain weight">Maintain Weight</option>
                 <option value="gain weight">Gain Weight</option>
               </select>
             </div>

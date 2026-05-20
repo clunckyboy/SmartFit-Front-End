@@ -17,8 +17,8 @@ function StatCard({ label, value, unit, sub, right }) {
 
 export default function OverviewSidebar() {
   return (
-    <aside className="w-full lg:w-72 shrink-0">
-      <section aria-label="Overview" className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col gap-3 h-full">
+    <aside className="w-full lg:w-72 shrink-0 overflow-hidden">
+      <section aria-label="Overview" className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 flex flex-col gap-3 h-full overflow-y-auto scrollbar-hide">
         <h2 className="text-black text-center font-bold text-lg">Overview</h2>
         <StatCard label="Today Calories" value="1.420" unit="kcal" sub="320kcal remaining" />
         <StatCard label="BMI" value="24,1" sub="Normal" />

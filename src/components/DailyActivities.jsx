@@ -1,30 +1,44 @@
+import { useState } from 'react';
+import ActivityPopup from './ActivityPopup';
+
 const CHECKER = {
   backgroundImage: "repeating-linear-gradient(45deg,#ccc 0,#ccc 1px,transparent 0,transparent 50%),repeating-linear-gradient(-45deg,#ccc 0,#ccc 1px,transparent 0,transparent 50%)",
   backgroundSize: "20px 20px",
 };
 
-function ActivityCard({ label, active }) {
+function ActivityCard({ activity, active, onClick }) {
   return (
-    <article className={`hover:scale-105 hover:shadow-lg transition-all rounded-lg p-3 flex flex-col gap-2 ${active ? "bg-green-300/70 ring-2 ring-green-400" : "bg-white/80"}`}>
-      <p className="text-gray-700 font-semibold text-sm text-center">{label}</p>
+    <article 
+      className={`hover:scale-105 hover:shadow-lg transition-all rounded-lg p-3 flex flex-col gap-2 ${active ? "bg-green-300/70 ring-2 ring-green-400" : "bg-white/80"}`}
+      onClick={onClick}
+    >
+      <p className="text-gray-700 font-semibold text-sm text-center">{activity.name}</p>
       <div className="w-full h-32 rounded-lg bg-gray-200" style={CHECKER} role="img" aria-label="Activity image placeholder" />
     </article>
   );
 }
 
-const activities = [
-  { id: 1, label: "Activity", active: true },
-  { id: 2, label: "Activity", active: false },
-  { id: 3, label: "Activity", active: false },
-];
+export default function DailyActivities({ activities = [] }) {
+  const [selected, setSelected] = useState(null);
 
-export default function DailyActivities() {
   return (
-    <section aria-label="Daily Activities" className="bg-white/70 backdrop-blur-sm rounded-2xl p-4">
-      <h2 className="text-black font-bold text-lg text-center mb-4">Daily Activities</h2>
-      <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4" role="list">
-        {activities.map((a) => <li key={a.id}><ActivityCard {...a} /></li>)}
-      </ul>
-    </section>
+    <>
+      <section aria-label="Daily Activities" className="bg-white/70 backdrop-blur-sm rounded-2xl p-4">
+        <h2 className="text-black font-bold text-lg text-center mb-4">Daily Activities</h2>
+        <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4" role="list">
+          {activities.map((a, index) => (
+            <li key={a.id}>
+              <ActivityCard 
+                activity={a}
+                active={index === 0}
+                onClick={() => setSelected(a)} 
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <ActivityPopup activity={selected} onClose={() => setSelected(null)} />
+    </>
   );
 }

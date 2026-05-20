@@ -52,8 +52,7 @@ export default function ProfilePopup({ open, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-label="Profile menu"
-        className="relative z-10 w-80 bg-white/70 backdrop-blur-sm rounded-2xl p-5 flex flex-col gap-3 shadow-2xl
-                   animate-[fadeSlideIn_0.18s_ease-out]"
+        className="relative z-10 w-80 bg-white/70 backdrop-blur-sm rounded-2xl p-5 flex flex-col gap-3 shadow-2xl animate-[fadeSlideIn_0.18s_ease-out]"
         style={{ animationFillMode: "both" }}
       >
         {/* User info */}
