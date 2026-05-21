@@ -1,7 +1,35 @@
 import { Link } from "react-router-dom";
 import Logo from '../assets/images/SFMonoLight.svg';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { register } from "../utils/network-data";
 
 function SignupPage() {
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [sex, setSex] = React.useState('');
+  const [weight, setWeight] = React.useState('');
+  const [height, setHeight] = React.useState('');
+  const [goal, setGoal] = React.useState('');
+
+  const navigate = useNavigate();
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    console.log('Form submitted!');
+    console.log({ username, email, password, firstName, lastName, sex, weight, height, goal });
+    const response = await register({ username, email, password, firstName, lastName, sex, weight, height, goal });
+    if (!response.error) {
+      alert('Registered Successfully');
+      navigate('/');
+    }
+  }
+
+
   return (
     <main className="flex h-screen">
       <Link to="/" className="absolute top-0 ml-10 mt-10 z-20">
@@ -15,41 +43,85 @@ function SignupPage() {
           <h1 className="text-4xl font-special-gothic-expanded-one">Create Account</h1>
         </div>
 
-        <form action="" className="w-lg flex flex-col justify-center space-y-3">
+        <form onSubmit={onSubmitHandler} className="w-lg flex flex-col justify-center space-y-3">
           <fieldset className="border-none p-0 m-0 space-y-3">
             <legend className="text-xl font-montserrat font-bold mb-5 block">Credentials</legend>
             
             <div id="nama" className="flex gap-4 w-full">
               <div id="nama depan" className="flex flex-col flex-1">
                 <label htmlFor="signup-firstname">First Name</label>
-                <input id="signup-firstname" type="text" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+                <input 
+                  id="signup-firstname" 
+                  type="text" 
+                  className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}  
+                  required
+                />
               </div>
               <div id="nama belakang" className="flex flex-col flex-1">
                 <label htmlFor="signup-lastname">Last Name</label>
-                <input id="signup-lastname" type="text" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+                <input 
+                  id="signup-lastname" 
+                  type="text" 
+                  className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}    
+                  required            
+                />
               </div>
             </div>
 
             <div id="username" className="flex flex-col">
               <label htmlFor="signup-username">Username</label>
-              <input id="signup-username" type="text" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+              <input 
+                id="signup-username" 
+                type="text" 
+                className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
 
             <div id="email" className="flex flex-col">
               <label htmlFor="signup-email">Email</label>
-              <input id="signup-email" type="email" placeholder="example@gmail.com" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+              <input 
+                id="signup-email" 
+                type="email" 
+                placeholder="example@gmail.com" 
+                className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                />
             </div>
 
             <div id="password" className="flex flex-col">
               <label htmlFor="signup-password">Password</label>
-              <input id="signup-password" type="password" placeholder="6 characters minimum" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+              <input 
+                id="signup-password" 
+                type="password" 
+                placeholder="6 characters minimum" 
+                className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                minLength={6}
+                required
+              />
             </div>
 
             <div id="sex" className="flex flex-col">
               <label htmlFor="signup-sex">Sex</label>
-              <select name="sex" id="signup-sex" defaultValue="" className="border border-black px-2 py-1 rounded-lg shadow-md">
+              <select 
+                name="sex" 
+                id="signup-sex" 
+                className="border border-black px-2 py-1 rounded-lg shadow-md"
+                value={sex}
+                onChange={(e) => setSex(e.target.value)}
+              >
                 <option value="" disabled>Select a gender</option>
-                <option value="Male">Male</option>
+                <option value="male">Male</option>
                 <option value="female">female</option>
               </select>
             </div>
@@ -61,21 +133,42 @@ function SignupPage() {
             <div id="fisik" className="flex gap-4 w-full">
               <div id="berat" className="flex flex-col flex-1">
                 <label htmlFor="signup-weight">Weight</label>
-                <input id="signup-weight" type="number" placeholder="in kilograms" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+                <input 
+                  id="signup-weight" 
+                  type="number" 
+                  placeholder="in kilograms" 
+                  className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  required
+                />
               </div>
               <div id="tinggi" className="flex flex-col flex-1">
                 <label htmlFor="signup-height">Height</label>
-                <input id="signup-height" type="number" placeholder="in centimeters" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+                <input 
+                  id="signup-height" 
+                  type="number" 
+                  placeholder="in centimeters" 
+                  className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  required
+                />
               </div>
             </div>
 
             <div id="goal" className="flex flex-col">
               <label htmlFor="signup-goal">Goal</label>
-              <select name="goal" id="signup-goal" defaultValue="" className="border border-black px-2 py-1 rounded-lg shadow-md">
+              <select 
+                name="goal" 
+                id="signup-goal" 
+                value={goal} 
+                onChange={(e) => setGoal(e.target.value)}
+                className="border border-black px-2 py-1 rounded-lg shadow-md">
                 <option value="" disabled>Select a goal</option>
-                <option value="lose weight">Lose Weight</option>
-                <option value="mantain weight">Maintain Weight</option>
-                <option value="gain weight">Gain Weight</option>
+                <option value="lose_weight">Lose Weight</option>
+                <option value="maintain_weight">Maintain Weight</option>
+                <option value="gain_weight">Gain Weight</option>
               </select>
             </div>
           </fieldset>
