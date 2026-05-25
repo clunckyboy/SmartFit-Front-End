@@ -1,7 +1,20 @@
 import { Link } from "react-router-dom";
 import Logo from '../assets/images/SFMonoLight.svg';
+import { login } from '../utils/network-data';
+import React from "react";
 
-function LoginPage() {
+function LoginPage({ loginSuccess }) {
+
+  const [username_email, setUsernameEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+    
+    const { error, data } = await login({username_email, password});
+    if (!error) loginSuccess(data);
+  }
+
   return (
     <main className="flex h-screen">
       <Link to="/" className="absolute top-0 ml-10 mt-10 z-20">
@@ -15,19 +28,36 @@ function LoginPage() {
           <h1 className="text-4xl font-special-gothic-expanded-one">Log In</h1>
         </div>
 
-        <form action="" className="w-lg flex flex-col justify-center space-y-3">
+        <form onSubmit={onSubmitHandler} className="w-lg flex flex-col justify-center space-y-3">
           <div id="username" className="flex flex-col">
             <label htmlFor="login-username">Username / Email</label>
-            <input id="login-username" type="text" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+            <input 
+              id="login-username" 
+              type="text" 
+              className="border border-black px-2 py-1 rounded-lg shadow-md" 
+              value={username_email}
+              onChange={(e) => setUsernameEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div id="password" className="flex flex-col">
             <label htmlFor="login-password">Password</label>
-            <input id="login-password" type="password" placeholder="6 characters minimum" className="border border-black px-2 py-1 rounded-lg shadow-md" />
+            <input 
+              id="login-password" 
+              type="password" 
+              placeholder="6 characters minimum" 
+              className="border border-black px-2 py-1 rounded-lg shadow-md" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           <div className="flex justify-center">
-            <button type="submit" className="mt-4 py-2 px-1 w-40 rounded-lg bg-[#293F2A] text-white font-semibold cursor-pointer transition-all duration-300 hover:shadow-lg">
+            <button 
+              type="submit" 
+              className="mt-4 py-2 px-1 w-40 rounded-lg bg-[#293F2A] text-white font-semibold cursor-pointer transition-all duration-300 hover:shadow-lg"
+            >
               Log In
             </button>
           </div>

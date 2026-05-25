@@ -1,21 +1,57 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import OverviewSidebar from "../components/OverviewSidebar";
 import DailyActivities from "../components/DailyActivities";
 import CaloriesLog from "../components/CaloriesLog";
 import ProfilePopup from "../components/ProfilePopUp";
 import { dailyActivities, foodData } from "../utils/dummyData";
+import { getDailyItems } from "../utils/seed";
+import { loadProgress, saveActivityProgress, saveFoodProgress } from '../utils/progress-storage';
 
-const USER_GOAL = "lose_weight";
-
-function getRandomItems(arr, count) {
-  return [...arr].sort(() => Math.random() - 0.5).slice(0, count); 
-}
-
-export default function DashboardPage() {
+export default function DashboardPage({ onLogout, user }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  
+  const [completedActivityIds, setCompletedActivityIds] = useState(new Set());
+  const [consumedFoodIds, setConsumedFoodIds] = useState(new Set());
+  const [streak, setStreak] = useState(0);
 
-  const activities = useMemo(() => getRandomItems(dailyActivities[USER_GOAL], 3), []);
-  const foods = useMemo(() => foodData[USER_GOAL].slice(0, 6), []);
+  const userGoal = user.goal ?? 'maintain-weight';
+
+  const activities = useMemo(() => 
+    getDailyItems(dailyActivities[userGoal], 3, user.id)  
+  , [userGoal, user.id]);
+
+  const foods = useMemo(() => 
+    getDailyItems(foodData[userGoal], 6, user.id)
+  , [userGoal, user.id]);
+
+  const dailyCalorieTarget = useMemo(() => foods.reduce((total, food) => total + food.kcal, 0), [foods]);
+
+  const completedActivities = completedActivityIds.size;
+  const consumedCalories = foods
+    .filter(f => consumedFoodIds.has(f.id))
+    .reduce((total, f) => total + f.kcal, 0);
+
+  async function handleActivityDone(activityId) {
+    setCompletedActivityIds(prev => new Set([...prev, activityId]));
+    const newStreak = await saveActivityProgress(activityId, true);
+    if (newStreak !== null) setStreak(newStreak);
+  };
+
+  async function handleFoodConsume(foodId) {
+    setConsumedFoodIds(prev => new Set([...prev, foodId]));
+
+    const newStreak = await saveFoodProgress(foodId,true);
+
+    if (newStreak !== null) setStreak(newStreak);
+  }
+
+  useEffect(() => {
+    loadProgress().then(({ completedActivityIds, consumedFoodIds, streak }) => {
+      setCompletedActivityIds(new Set(completedActivityIds));
+      setConsumedFoodIds(new Set(consumedFoodIds));
+      setStreak(streak);
+    })
+  }, [user.id]);
 
   return (
     <div
@@ -42,16 +78,30 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex flex-col lg:flex-row gap-4 flex-1 overflow-hidden">
-          <OverviewSidebar />
+          <OverviewSidebar 
+            user={user} 
+            completedActivities={completedActivities} 
+            consumedCalories={consumedCalories} 
+            streak={streak}
+            dailyCalorieTarget={dailyCalorieTarget}
+          />
           <div className="flex flex-col gap-4 flex-1">
-            <DailyActivities activities={activities} />
-            <CaloriesLog foods={foods} />
+            <DailyActivities 
+              activities={activities} 
+              completedActivityIds={completedActivityIds}
+              onDone={handleActivityDone}
+            />
+            <CaloriesLog 
+              foods={foods} 
+              onConsume={handleFoodConsume} 
+              consumedFoodIds={consumedFoodIds}
+            />
           </div>
         </main>
 
       </div>
 
-      <ProfilePopup open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <ProfilePopup open={menuOpen} onClose={() => setMenuOpen(false)} onLogout={onLogout} user={user} />
     </div>
   );
 };

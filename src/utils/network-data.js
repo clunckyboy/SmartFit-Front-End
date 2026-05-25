@@ -34,16 +34,18 @@ async function login({ username_email, password }) {
     return { error: true, data: null };
   }
 
+  localStorage.setItem('refreshToken', responseJson.data.refreshToken);
+
   return { error: false, data: responseJson.data };
 }
 
-async function register({ username, email, password, firstName, lastName, sex , weight, height, goal }) {
+async function register({ username, email, password, firstName, lastName, sex , weight, height, goal, age }) {
   const response = await fetch(`${BASE_URL}/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username, email, password, first_name: firstName, last_name: lastName, sex, weight, height, goal }),
+    body: JSON.stringify({ username, email, password, first_name: firstName, last_name: lastName, sex, weight, height, goal, age }),
   });
 
   const responseJson = await response.json();
@@ -57,7 +59,7 @@ async function register({ username, email, password, firstName, lastName, sex , 
 }
 
 async function getUserLogged() {
-  const response = await fetchWithToken(`${BASE_URL}/users/me`);
+  const response = await fetchWithToken(`${BASE_URL}/users`);
   const responseJson = await response.json();
 
   if (responseJson.status !== 'success') {
@@ -67,10 +69,26 @@ async function getUserLogged() {
   return { error: false, data: responseJson.data };
 }
 
+async function logout() {
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  if (refreshToken) {
+    await fetchWithToken(`${BASE_URL}/logout`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken })
+    });
+  }
+
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+}
+
 export {
   getAccessToken,
   putAccessToken, 
   login,
+  logout,
   register, 
   getUserLogged
 }

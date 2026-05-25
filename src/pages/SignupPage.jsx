@@ -10,6 +10,7 @@ function SignupPage() {
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [age, setAge] = React.useState('');
   const [sex, setSex] = React.useState('');
   const [weight, setWeight] = React.useState('');
   const [height, setHeight] = React.useState('');
@@ -20,15 +21,12 @@ function SignupPage() {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    console.log('Form submitted!');
-    console.log({ username, email, password, firstName, lastName, sex, weight, height, goal });
-    const response = await register({ username, email, password, firstName, lastName, sex, weight, height, goal });
+    const response = await register({ username, email, password, firstName, lastName, sex, weight, height, goal, age });
     if (!response.error) {
       alert('Registered Successfully');
       navigate('/');
     }
   }
-
 
   return (
     <main className="flex h-screen">
@@ -122,8 +120,21 @@ function SignupPage() {
               >
                 <option value="" disabled>Select a gender</option>
                 <option value="male">Male</option>
-                <option value="female">female</option>
+                <option value="female">Female</option>
               </select>
+            </div>
+
+            <div id="age" className="flex flex-col">
+              <label htmlFor="signup-age">Age</label>
+              <input 
+                  id="signup-age" 
+                  type="number" 
+                  placeholder="in years" 
+                  className="border border-black px-2 py-1 rounded-lg shadow-md" 
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  required
+                />
             </div>
           </fieldset>
           

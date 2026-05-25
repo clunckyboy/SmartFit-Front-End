@@ -1,4 +1,4 @@
-export default function FoodPopup({ food, onClose }) {
+export default function FoodPopup({ food, consumed, onClose, onConsume}) {
   if (!food) return null;
 
   return (
@@ -23,15 +23,27 @@ export default function FoodPopup({ food, onClose }) {
           </div>
 
           {/* Tombol centang */}
-          <button
-            onClick={onClose}
-            className="w-12 h-12 rounded-full bg-gray-100 hover:bg-white flex items-center justify-center cursor-pointer transition-colors shrink-0"
-            aria-label="Confirm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+          {consumed ? (
+            <button
+              onClick={onClose}
+              className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center cursor-pointer transition-colors shrink-0"
+              aria-label="Unconsume"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
           </button>
+          ) : (
+            <button
+              onClick={() => onConsume(food.id)}
+              className="w-12 h-12 rounded-full bg-gray-100 hover:bg-white flex items-center justify-center cursor-pointer transition-colors shrink-0"
+              aria-label="Consume"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </button>
+          )}
         </div>
 
       </div>

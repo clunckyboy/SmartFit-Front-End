@@ -13,12 +13,23 @@ function ActivityCard({ activity, active, onClick }) {
       onClick={onClick}
     >
       <p className="text-gray-700 font-semibold text-sm text-center">{activity.name}</p>
-      <div className="w-full h-32 rounded-lg bg-gray-200" style={CHECKER} role="img" aria-label="Activity image placeholder" />
+      {activity.image ? (
+        <img 
+          src={activity.image} 
+          alt={activity.name}
+          className="w-full h-32 rounded-lg object-cover"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'block';
+          }} 
+        />
+      ) : null}
+      <div className="w-full h-32 rounded-lg bg-gray-200" style={{ ...CHECKER, display: activity.image ? 'none' : 'block' }} role="img" aria-label="Activity image placeholder" />
     </article>
   );
 }
 
-export default function DailyActivities({ activities = [] }) {
+export default function DailyActivities({ activities = [], completedActivityIds, onDone, onQuit }) {
   const [selected, setSelected] = useState(null);
 
   return (
@@ -26,11 +37,11 @@ export default function DailyActivities({ activities = [] }) {
       <section aria-label="Daily Activities" className="bg-white/70 backdrop-blur-sm rounded-2xl p-4">
         <h2 className="text-black font-bold text-lg text-center mb-4">Daily Activities</h2>
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4" role="list">
-          {activities.map((a, index) => (
+          {activities.map((a) => (
             <li key={a.id}>
               <ActivityCard 
                 activity={a}
-                active={index === 0}
+                active={completedActivityIds.has(a.id)}
                 onClick={() => setSelected(a)} 
               />
             </li>
@@ -38,7 +49,13 @@ export default function DailyActivities({ activities = [] }) {
         </ul>
       </section>
 
-      <ActivityPopup activity={selected} onClose={() => setSelected(null)} />
+      <ActivityPopup 
+        activity={selected} 
+        completed={selected ? completedActivityIds.has(selected.id) : false}
+        onClose={() => setSelected(null)} 
+        onDone={(id) => { onDone(id); setSelected(null);}}
+        onQuit={(id) => { onQuit(id); setSelected(null);}}
+      />
     </>
   );
 }

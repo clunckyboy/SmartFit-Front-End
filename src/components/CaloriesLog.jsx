@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import FoodPopup from './FoodPopup';
 
-function FoodItem({ food, onClick }) {
+function FoodItem({ food, consumed, onClick }) {
   return (
-    <article className="bg-white/80 rounded-lg p-3 flex items-center gap-3 hover:bg-white transition-colors shadow-sm" onClick={onClick}>
+    <article 
+      className={`rounded-lg p-3 flex items-center gap-3 transition-colors shadow-sm cursor-pointer ${ consumed ? "bg-green-400/80 hover:bg-green-400" : "bg-white/80 hover:bg-white"}`} 
+      onClick={onClick}
+    >
       <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center shrink-0 text-2xl select-none" role="img" aria-label="food icon">
         {food.emoji}
       </div>
@@ -16,7 +19,7 @@ function FoodItem({ food, onClick }) {
   );
 }
 
-export default function CaloriesLog({ foods = [] }) {
+export default function CaloriesLog({ foods = [], consumedFoodIds, onConsume, onUnconsume }) {
   const [selected, setSelected] = useState(null);
 
   return (
@@ -26,13 +29,23 @@ export default function CaloriesLog({ foods = [] }) {
         <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3" role="list">
           {foods.map((item) => (
             <li key={item.id}>
-              <FoodItem food={item} onClick={() => setSelected(item)} />
+              <FoodItem 
+                food={item} 
+                onClick={() => setSelected(item)} 
+                consumed={consumedFoodIds.has(item.id)}  
+              />
             </li>
           ))}
         </ul>
       </section>
 
-      <FoodPopup food={selected} onClose={() => setSelected(null)} />
+      <FoodPopup 
+        food={selected} 
+        consumed={selected ? consumedFoodIds.has(selected.id) : false}
+        onClose={() => setSelected(null)} 
+        onConsume={(id) => { onConsume(id); setSelected(null); }}
+        onUnconsume={(id) => { onUnconsume(id); setSelected(null); }}
+      />
     </>
   );
 }

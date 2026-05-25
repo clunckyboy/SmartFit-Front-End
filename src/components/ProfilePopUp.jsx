@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 function MenuButton({ onClick, children, variant = "default" }) {
@@ -14,8 +14,7 @@ function MenuButton({ onClick, children, variant = "default" }) {
   );
 }
 
-export default function ProfilePopup({ open, onClose }) {
-  const [theme, setTheme] = useState("Light");
+export default function ProfilePopup({ open, onClose, onLogout, user }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -36,8 +35,9 @@ export default function ProfilePopup({ open, onClose }) {
 
   if (!open) return null;
 
-  function toggleTheme() {
-    setTheme((t) => (t === "Light" ? "Dark" : "Light"));
+  function handleLogout() {
+    onLogout();
+    onClose();
   }
 
   return (
@@ -57,8 +57,8 @@ export default function ProfilePopup({ open, onClose }) {
       >
         {/* User info */}
         <div className="flex flex-col items-center pb-1">
-          <p className="text-black text-1xl font-bold">John Doe</p>
-          <p className="text-gray-500 text-base">@johndoe</p>
+          <p className="text-black text-1xl font-bold">{user?.first_name} {user?.last_name}</p>
+          <p className="text-gray-500 text-base">@{user?.username}</p>
         </div>
 
         {/* About */}
@@ -66,17 +66,9 @@ export default function ProfilePopup({ open, onClose }) {
           <MenuButton>About</MenuButton>
         </Link>
 
-        {/* Theme toggle */}
-        <MenuButton onClick={toggleTheme}>
-          Theme: {theme}
+        <MenuButton variant="danger" onClick={handleLogout}>
+          Log Out
         </MenuButton>
-
-        {/* Log Out */}
-        <Link to="/login">
-          <MenuButton variant="danger" onClick={onClose}>
-            Log Out
-          </MenuButton>
-        </Link>
       </div>
 
       <style>{`
