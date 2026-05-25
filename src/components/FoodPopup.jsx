@@ -1,17 +1,29 @@
-export default function FoodPopup({ food, consumed, onClose, onConsume}) {
+export default function FoodPopup({ food, consumed, onClose, onConsume }) {
   if (!food) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-      {/* backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onClose} />
+      
+      {/* backdrop - Fades in */}
+      <div 
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" 
+        onClick={onClose} 
+        style={{
+          animation: 'foodFadeIn 200ms ease-out forwards'
+        }}
+      />
 
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-sm bg-gray-300 rounded-2xl p-5">
+      {/* Card - Scales and slides up slightly */}
+      <div 
+        className="relative z-10 w-full max-w-sm bg-white/70 rounded-xl p-5 backdrop-blur-lg box-shadow-lg"
+        style={{
+          animation: 'foodPopupEnter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
+        }}
+      >
 
         <div className="flex items-center gap-4">
           {/* Emoji icon */}
-          <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center text-4xl shrink-0 select-none">
+          <div className="w-16 h-16 rounded-lg bg-white flex items-center justify-center text-4xl shrink-0 select-none">
             {food.emoji}
           </div>
 
@@ -32,7 +44,7 @@ export default function FoodPopup({ food, consumed, onClose, onConsume}) {
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
-          </button>
+            </button>
           ) : (
             <button
               onClick={() => onConsume(food.id)}
@@ -47,6 +59,18 @@ export default function FoodPopup({ food, consumed, onClose, onConsume}) {
         </div>
 
       </div>
+
+      {/* Scoped Keyframes */}
+      <style>{`
+        @keyframes foodFadeIn { 
+          from { opacity: 0; } 
+          to { opacity: 1; } 
+        }
+        @keyframes foodPopupEnter { 
+          from { opacity: 0; transform: scale(0.95) translateY(12px); } 
+          to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+      `}</style>
     </div>
-  )
+  );
 }

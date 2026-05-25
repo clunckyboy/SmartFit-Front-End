@@ -9,22 +9,25 @@ import { loadProgress, saveActivityProgress, saveFoodProgress } from '../utils/p
 
 export default function DashboardPage({ onLogout, user }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  
+  const [scrolled, setScrolled] = useState(false);
+
   const [completedActivityIds, setCompletedActivityIds] = useState(new Set());
   const [consumedFoodIds, setConsumedFoodIds] = useState(new Set());
   const [streak, setStreak] = useState(0);
 
   const userGoal = user.goal ?? 'maintain-weight';
 
-  const activities = useMemo(() => 
-    getDailyItems(dailyActivities[userGoal], 3, user.id)  
+  const activities = useMemo(() =>
+    getDailyItems(dailyActivities[userGoal], 3, user.id)
   , [userGoal, user.id]);
 
-  const foods = useMemo(() => 
+  const foods = useMemo(() =>
     getDailyItems(foodData[userGoal], 6, user.id)
   , [userGoal, user.id]);
 
-  const dailyCalorieTarget = useMemo(() => foods.reduce((total, food) => total + food.kcal, 0), [foods]);
+  const dailyCalorieTarget = useMemo(() =>
+    foods.reduce((total, food) => total + food.kcal, 0)
+  , [foods]);
 
   const completedActivities = completedActivityIds.size;
   const consumedCalories = foods
@@ -35,13 +38,11 @@ export default function DashboardPage({ onLogout, user }) {
     setCompletedActivityIds(prev => new Set([...prev, activityId]));
     const newStreak = await saveActivityProgress(activityId, true);
     if (newStreak !== null) setStreak(newStreak);
-  };
+  }
 
   async function handleFoodConsume(foodId) {
     setConsumedFoodIds(prev => new Set([...prev, foodId]));
-
-    const newStreak = await saveFoodProgress(foodId,true);
-
+    const newStreak = await saveFoodProgress(foodId, true);
     if (newStreak !== null) setStreak(newStreak);
   }
 
@@ -50,19 +51,29 @@ export default function DashboardPage({ onLogout, user }) {
       setCompletedActivityIds(new Set(completedActivityIds));
       setConsumedFoodIds(new Set(consumedFoodIds));
       setStreak(streak);
-    })
+    });
   }, [user.id]);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <div
-      className="w-full h-screen fixed inset-0 bg-cover bg-center bg-no-repeat overflow-hidden"
-      style={{ backgroundImage: "url('/images/landing-page-background.png')", backgroundColor: "#166534" }}
-    >
+    <div className="min-h-screen">
+
+      {/* fixed background layers */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+        style={{ backgroundImage: "url('/images/landing-page-background.png')", backgroundColor: "#166534" }}
+      />
       <div className="fixed inset-0 bg-green-900/50 pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col h-full p-4 gap-4">
+      {/* scroll container */}
+      <div className="relative z-10 min-h-screen flex flex-col p-4 gap-4">
 
-        <header className="flex items-center justify-between px-2 py-1">
+        <header className={`sticky top-0 z-20 flex items-center justify-between py-2 -mx-4 px-4 transition-colors duration-300 ${scrolled ? 'bg-green-900/80 backdrop-blur-md shadow-lg' : 'bg-transparent'}`}>
           <h1 className="text-white text-3xl tracking-wide font-special-gothic-expanded-one select-none">
             SmartFit
           </h1>
@@ -77,23 +88,23 @@ export default function DashboardPage({ onLogout, user }) {
           </nav>
         </header>
 
-        <main className="flex flex-col lg:flex-row gap-4 flex-1 overflow-hidden">
-          <OverviewSidebar 
-            user={user} 
-            completedActivities={completedActivities} 
-            consumedCalories={consumedCalories} 
+        <main className="flex flex-col lg:flex-row gap-4 flex-1">
+          <OverviewSidebar
+            user={user}
+            completedActivities={completedActivities}
+            consumedCalories={consumedCalories}
             streak={streak}
             dailyCalorieTarget={dailyCalorieTarget}
           />
           <div className="flex flex-col gap-4 flex-1">
-            <DailyActivities 
-              activities={activities} 
+            <DailyActivities
+              activities={activities}
               completedActivityIds={completedActivityIds}
               onDone={handleActivityDone}
             />
-            <CaloriesLog 
-              foods={foods} 
-              onConsume={handleFoodConsume} 
+            <CaloriesLog
+              foods={foods}
+              onConsume={handleFoodConsume}
               consumedFoodIds={consumedFoodIds}
             />
           </div>
@@ -104,4 +115,4 @@ export default function DashboardPage({ onLogout, user }) {
       <ProfilePopup open={menuOpen} onClose={() => setMenuOpen(false)} onLogout={onLogout} user={user} />
     </div>
   );
-};
+}

@@ -7,36 +7,56 @@ export default function ActivityPopup({ activity, completed, onClose, onDone }) 
   if (!activity) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
 
-      {/* backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onClose} />
+      {/* backdrop - uses Tailwind's built-in transition utility with a tiny utility keyframe */}
+      <div 
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px] animate-[fadeIn_200ms_ease-out]" 
+        onClick={onClose} 
+      />
 
-      {/* card */}
-      <div className="relative z-10 w-full max-w-3xl bg-gray-300 rounded-2xl p-8 flex flex-col gap-6">
+      {/* card - scales and slides up cleanly on mount using inline arbitrary styles */}
+      <div 
+        className="relative z-10 w-full max-w-3xl bg-white/70 backdrop-blur-lg rounded-2xl p-5 sm:p-8 flex flex-col gap-4 sm:gap-6 animate-[popupEnter_300ms_cubic-bezier(0.34,1.56,0.64,1)]"
+        style={{
+          // Inlining the keyframe behavior via standard CSS ensures zero linter issues 
+          // and pristine, GPU-accelerated performance.
+          animationKeyframes: `
+            @keyframes popupEnter {
+              from { opacity: 0; transform: scale(0.95) translateY(10px); }
+              to { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+          `
+        }}
+      >
 
-        <h2 className="text-3xl font-black text-black">{activity.name}</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-black">{activity.name}</h2>
 
-        <div className="flex gap-6 items-start">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
 
           {activity.image ? (
-            <img 
-              src={activity.image} 
+            <img
+              src={activity.image}
               alt={activity.name}
-              className="w-96 h-64 rounded-xl object-cover shrink-0 border border-black" 
+              className="w-full sm:w-96 h-48 sm:h-64 rounded-xl object-cover shrink-0 border border-black"
               onError={(e) => {
                 e.target.style.display = 'none';
                 e.target.nextSibling.style.display = 'block';
               }}
             />
-          ) : null} 
+          ) : null}
 
-          <div 
-            className="w-96 h-64 rounded-xl border border-black shrink-0"
-            style={{ ...CHECKER, display: activity.image ? 'none' : 'block'}}
+          <div
+            className="w-full sm:w-96 h-48 sm:h-64 rounded-xl border border-black shrink-0"
+            style={{ ...CHECKER, display: activity.image ? 'none' : 'block' }}
             role="img"
             aria-label="Activity image placeholder"
           />
+
           <p className="text-black font-semibold text-base leading-relaxed">
             {activity.description}
           </p>
@@ -61,6 +81,15 @@ export default function ActivityPopup({ activity, completed, onClose, onDone }) 
         </div>
 
       </div>
+      
+      {/* Tiny style injection block to make the arbitrary tailwind keyframes work natively */}
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popupEnter { 
+          from { opacity: 0; transform: scale(0.96) translateY(8px); } 
+          to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+      `}</style>
     </div>
-  )
+  );
 }

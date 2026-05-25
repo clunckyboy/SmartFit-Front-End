@@ -4,7 +4,7 @@ import FoodPopup from './FoodPopup';
 function FoodItem({ food, consumed, onClick }) {
   return (
     <article 
-      className={`rounded-lg p-3 flex items-center gap-3 transition-colors shadow-sm cursor-pointer ${ consumed ? "bg-green-400/80 hover:bg-green-400" : "bg-white/80 hover:bg-white"}`} 
+      className={`rounded-lg p-3 flex items-center gap-3 transition-colors shadow-sm cursor-pointer ${ consumed ? "bg-green-300/70 ring-2 ring-green-400 hover:bg-green-300" : "bg-white/80 hover:bg-white/100" }`} 
       onClick={onClick}
     >
       <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center shrink-0 text-2xl select-none" role="img" aria-label="food icon">
