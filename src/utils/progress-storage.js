@@ -45,7 +45,7 @@ export async function saveFoodProgress(foodId, consumed) {
     });
 
     const json = await res.json();
-    return json.data.streak ?? null;
+    return json.data?.streak ?? null;
   } catch {
     console.error('Failed to save food progress');
     return null;

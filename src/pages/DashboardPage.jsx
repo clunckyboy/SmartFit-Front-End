@@ -3,9 +3,8 @@ import OverviewSidebar from "../components/OverviewSidebar";
 import DailyActivities from "../components/DailyActivities";
 import CaloriesLog from "../components/CaloriesLog";
 import ProfilePopup from "../components/ProfilePopUp";
-import { dailyActivities, foodData } from "../utils/dummyData";
-import { getDailyItems } from "../utils/seed";
 import { loadProgress, saveActivityProgress, saveFoodProgress } from '../utils/progress-storage';
+import { getAIRecommendations } from '../utils/network-data';
 
 export default function DashboardPage({ onLogout, user }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,15 +14,9 @@ export default function DashboardPage({ onLogout, user }) {
   const [consumedFoodIds, setConsumedFoodIds] = useState(new Set());
   const [streak, setStreak] = useState(0);
 
-  const userGoal = user.goal ?? 'maintain-weight';
-
-  const activities = useMemo(() =>
-    getDailyItems(dailyActivities[userGoal], 3, user.id)
-  , [userGoal, user.id]);
-
-  const foods = useMemo(() =>
-    getDailyItems(foodData[userGoal], 6, user.id)
-  , [userGoal, user.id]);
+  const [activities, setActivities] = useState([]);
+  const [foods, setFoods] = useState([]);
+  const [isLoadingAI, setIsLoadingAI] = useState(true);
 
   const dailyCalorieTarget = useMemo(() =>
     foods.reduce((total, food) => total + food.kcal, 0)
@@ -52,7 +45,40 @@ export default function DashboardPage({ onLogout, user }) {
       setConsumedFoodIds(new Set(consumedFoodIds));
       setStreak(streak);
     });
-  }, [user.id]);
+  }, [user?.id]);
+
+  useEffect(() => {
+    async function fetchRecommendations() {
+      if (!user) return;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const cacheKey = `smartfit_ai_${user.id}_${todayStr}`;
+      
+      // Cek apakah hari ini sudah pernah mengambil rekomendasi AI
+      const cachedData = localStorage.getItem(cacheKey);
+
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        setActivities(parsed.activities);
+        setFoods(parsed.foods);
+        setIsLoadingAI(false);
+        return;
+      }
+
+      // Jika belum, panggil model FastAPI
+      const { error, data } = await getAIRecommendations(user);
+      
+      if (!error && data) {
+        setActivities(data.activities);
+        setFoods(data.foods);
+        // Simpan ke localStorage agar tidak ter-randomize ulang saat di-refresh
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+      }
+      setIsLoadingAI(false);
+    }
+
+    fetchRecommendations();
+  }, [user]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);

@@ -29,7 +29,7 @@ function ActivityCard({ activity, active, onClick }) {
   );
 }
 
-export default function DailyActivities({ activities = [], completedActivityIds, onDone, onQuit }) {
+export default function DailyActivities({ activities = [], completedActivityIds, onDone }) {
   const [selected, setSelected] = useState(null);
 
   return (
@@ -54,7 +54,6 @@ export default function DailyActivities({ activities = [], completedActivityIds,
         completed={selected ? completedActivityIds.has(selected.id) : false}
         onClose={() => setSelected(null)} 
         onDone={(id) => { onDone(id); setSelected(null);}}
-        onQuit={(id) => { onQuit(id); setSelected(null);}}
       />
     </>
   );

@@ -84,11 +84,48 @@ async function logout() {
   localStorage.removeItem('refreshToken');
 }
 
+const AI_MODEL_URL = 'http://127.0.0.1:8000';
+
+async function getAIRecommendations(user) {
+
+  const formattedGoal = (user.goal).replace('-', '_');
+
+  // Mapping data user dari database ke format yang diminta FastAPI
+  const payload = {
+    gender: user.gender, // Pastikan formatnya sesuai (misal: 'male' / 'female')
+    weight_kg: parseFloat(user.weight_kg),
+    height_cm: parseFloat(user.height_cm),
+    goal: formattedGoal,
+    age: parseInt(user.age)
+  };
+
+  try {
+    const response = await fetch(`${AI_MODEL_URL}/predict`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      return { error: true, data: null };
+    }
+
+    const data = await response.json();
+    return { error: false, data };
+  } catch (error) {
+    console.error('Gagal mengambil data dari API Model:', error);
+    return { error: true, data: null };
+  }
+}
+
 export {
   getAccessToken,
   putAccessToken, 
   login,
   logout,
   register, 
-  getUserLogged
+  getUserLogged,
+  getAIRecommendations
 }

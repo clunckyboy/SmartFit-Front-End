@@ -19,7 +19,7 @@ function FoodItem({ food, consumed, onClick }) {
   );
 }
 
-export default function CaloriesLog({ foods = [], consumedFoodIds, onConsume, onUnconsume }) {
+export default function CaloriesLog({ foods = [], consumedFoodIds, onConsume }) {
   const [selected, setSelected] = useState(null);
 
   return (
@@ -44,7 +44,6 @@ export default function CaloriesLog({ foods = [], consumedFoodIds, onConsume, on
         consumed={selected ? consumedFoodIds.has(selected.id) : false}
         onClose={() => setSelected(null)} 
         onConsume={(id) => { onConsume(id); setSelected(null); }}
-        onUnconsume={(id) => { onUnconsume(id); setSelected(null); }}
       />
     </>
   );
