@@ -3,42 +3,49 @@ const CHECKER = {
   backgroundSize: '20px 20px',
 };
 
+function getYouTubeEmbedUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    // handles both youtube.com/watch?v=ID and youtu.be/ID
+    const videoId = u.searchParams.get('v') || u.pathname.slice(1);
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function ActivityPopup({ activity, completed, onClose, onDone }) {
   if (!activity) return null;
+
+  const embedUrl = getYouTubeEmbedUrl(activity.youtube_url);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
 
-      {/* backdrop - uses Tailwind's built-in transition utility with a tiny utility keyframe */}
-      <div 
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px] animate-[fadeIn_200ms_ease-out]" 
-        onClick={onClose} 
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px] animate-[fadeIn_200ms_ease-out]"
+        onClick={onClose}
       />
 
-      {/* card - scales and slides up cleanly on mount using inline arbitrary styles */}
-      <div 
-        className="relative z-10 w-full max-w-3xl bg-white/70 backdrop-blur-lg rounded-2xl p-5 sm:p-8 flex flex-col gap-4 sm:gap-6 animate-[popupEnter_300ms_cubic-bezier(0.34,1.56,0.64,1)]"
-        style={{
-          // Inlining the keyframe behavior via standard CSS ensures zero linter issues 
-          // and pristine, GPU-accelerated performance.
-          animationKeyframes: `
-            @keyframes popupEnter {
-              from { opacity: 0; transform: scale(0.95) translateY(10px); }
-              to { opacity: 1; transform: scale(1) translateY(0); }
-            }
-            @keyframes fadeIn {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-          `
-        }}
-      >
+      <div className="relative z-10 w-full max-w-3xl bg-white/70 backdrop-blur-lg rounded-2xl p-5 sm:p-8 flex flex-col gap-4 sm:gap-6 animate-[popupEnter_300ms_cubic-bezier(0.34,1.56,0.64,1)]">
 
         <h2 className="text-2xl sm:text-3xl font-black text-black">{activity.name}</h2>
 
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
 
-          {activity.image ? (
+          {/* ── Media block: YouTube embed > image > checker fallback ── */}
+          {embedUrl ? (
+            <div className="w-full sm:w-96 shrink-0 rounded-xl overflow-hidden aspect-video">
+              <iframe
+                src={embedUrl}
+                title={activity.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          ) : activity.image ? (
             <img
               src={activity.image}
               alt={activity.name}
@@ -48,14 +55,14 @@ export default function ActivityPopup({ activity, completed, onClose, onDone }) 
                 e.target.nextSibling.style.display = 'block';
               }}
             />
-          ) : null}
-
-          <div
-            className="w-full sm:w-96 h-48 sm:h-64 rounded-xl border border-black shrink-0"
-            style={{ ...CHECKER, display: activity.image ? 'none' : 'block' }}
-            role="img"
-            aria-label="Activity image placeholder"
-          />
+          ) : (
+            <div
+              className="w-full sm:w-96 h-48 sm:h-64 rounded-xl border border-black shrink-0"
+              style={CHECKER}
+              role="img"
+              aria-label="Activity image placeholder"
+            />
+          )}
 
           <p className="text-black font-semibold text-base leading-relaxed">
             {activity.description}
@@ -81,8 +88,7 @@ export default function ActivityPopup({ activity, completed, onClose, onDone }) 
         </div>
 
       </div>
-      
-      {/* Tiny style injection block to make the arbitrary tailwind keyframes work natively */}
+
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes popupEnter { 
