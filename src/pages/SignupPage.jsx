@@ -20,6 +20,17 @@ function SignupPage() {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    if (!sex) {
+      alert('Please select a gender');
+      return;
+    }
+
+    if (!goal) {
+      alert('Please select a goal');
+      return;
+    }
+
     const response = await register({ username, email, password, firstName, lastName, sex, weight, height, goal, age });
     if (!response.error) {
       alert('Registered Successfully');
@@ -116,6 +127,7 @@ function SignupPage() {
                 className="border border-black px-2 py-1 rounded-lg shadow-md"
                 value={sex}
                 onChange={(e) => setSex(e.target.value)}
+                required
               >
                 <option value="" disabled>Select a gender</option>
                 <option value="male">Male</option>
@@ -174,6 +186,7 @@ function SignupPage() {
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 className="border border-black px-2 py-1 rounded-lg shadow-md"
+                required
               >
                 <option value="" disabled>Select a goal</option>
                 <option value="lose_weight">Lose Weight</option>
